@@ -1,3 +1,4 @@
+const User = require('../users/users-model');
 /*
   If the user does not have a session saved in the server
 
@@ -6,9 +7,8 @@
     "message": "You shall not pass!"
   }
 */
-function restricted(req,res,next) {
-  console.log('Restrictedddd MIDDLEWARE')
-
+ function restricted(req,res,next) {
+  next()
 }
 
 /*
@@ -21,7 +21,7 @@ function restricted(req,res,next) {
 */
 function checkUsernameFree(req,res,next) {
   console.log('USERNAMEFREE MIDDLEWARE')
-
+  next()
 }
 
 /*
@@ -32,9 +32,16 @@ function checkUsernameFree(req,res,next) {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists(req,res,next) {
-  console.log('USERNAME EXISTs MIDDLEWARE')
+async function checkUsernameExists(req,res,next) {
+  const {username} = req.body;
 
+  const [userFromDb] = await User.findBy({ username })
+
+  if (userFromDb) {
+    next()
+  }else{
+    next({status:401, message:"You shall not pass!"})
+  }
 }
 
 /*
@@ -47,6 +54,7 @@ function checkUsernameExists(req,res,next) {
 */
 function checkPasswordLength(req,res,next) {
   console.log('password MIDDLEWARE')
+  next()
 
 }
 

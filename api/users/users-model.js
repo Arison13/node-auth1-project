@@ -21,7 +21,7 @@ function findById(user_id) {
 
   return db('users')
   .select('user_id', 'username')
-  .where('user_id', user_id).
+  .where(user_id).
   first()
 }
 
