@@ -11,7 +11,7 @@ return db('users').select('user_id', 'username')
   resolves to an ARRAY with all users that match the filter condition
  */
 function findBy(filter) {
-return db('users').where(filter).orderBy('user_id')
+return db('users').where(filter)
 }
 
 /**
@@ -21,8 +21,8 @@ function findById(user_id) {
 
   return db('users')
   .select('user_id', 'username')
-  .where(user_id).
-  first()
+  .where("user_id",user_id)
+  .first()
 }
 
 /**
@@ -30,7 +30,6 @@ function findById(user_id) {
  */
 async function add(user) {
 const newUser = await db('users').insert(user)
-
 return findById(newUser)
 }
 

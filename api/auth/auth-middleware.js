@@ -19,9 +19,17 @@ const User = require('../users/users-model');
     "message": "Username taken"
   }
 */
-function checkUsernameFree(req,res,next) {
-  console.log('USERNAMEFREE MIDDLEWARE')
-  next()
+async function checkUsernameFree (req,res,next) {
+  try{
+    const user = await User.findBy({username: req.body.username}).first()
+    if(user) { 
+      next({message: "Username taken", status:422})
+    }else {
+      next()
+    }
+  }catch (err) {
+    next(err)
+  }
 }
 
 /*
@@ -33,14 +41,13 @@ function checkUsernameFree(req,res,next) {
   }
 */
 async function checkUsernameExists(req,res,next) {
-  const {username} = req.body;
+  const validUsername = await User.findBy({username: req.body.username }).first()
 
-  const [userFromDb] = await User.findBy({ username })
-
-  if (userFromDb) {
-    next()
+  if (!validUsername) {
+    next({status:401, message:"Invalid credentials"})
   }else{
-    next({status:401, message:"You shall not pass!"})
+    req.body.username = validUsername;
+    next()
   }
 }
 
@@ -53,8 +60,11 @@ async function checkUsernameExists(req,res,next) {
   }
 */
 function checkPasswordLength(req,res,next) {
-  console.log('password MIDDLEWARE')
-  next()
+  if(!req.body.password || req.body.password.length < 3){
+    next({message: "Password must be longer than 3 chars", status:422 })
+  }else {
+    next()
+  }
 
 }
 
